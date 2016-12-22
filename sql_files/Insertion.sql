@@ -27,12 +27,10 @@ INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1021,8,'20
 
 INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1022,2,'2016-8-4 23:15:00','semi_final');
 INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1023,2,'2016-8-4 23:15:00','semi_final');
-INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1024,2,'2016-8-4 23:15:00','semi_final');
-INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1025,2,'2016-8-4 23:15:00','semi_final');
 
-INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1026,2,'2016-8-5 23:15:00','R');
+INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1024,2,'2016-8-5 23:15:00','R');
 
-INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1027,2,'2016-8-6 23:15:00','final');
+INSERT INTO Games (game_id, staduim_id, game_time, game_type) VALUES (1025,2,'2016-8-6 23:15:00','final');
 -------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------Teams ----------------------------------------------------------
