@@ -32,3 +32,28 @@ BEGIN
     fetch next from @c into @t_1,@t_2,@t1_goal,@t2_goal;
   END
 END
+
+CREATE PROCEDURE find_best_player AS
+BEGIN
+  DECLARE @id INT;
+  DECLARE @goals INT;
+  DECLARE @idBestPlayer INT;
+  DECLARE @goalsBestPlayer INT;
+  SET @idBestPlayer = 0
+  SET @goalsBestPlayer = 0
+  DECLARE @c CURSOR;
+  set @c= CURSOR for select Players.player_id , Players.n_goals FROM Players;
+  OPEN @c
+  fetch next from @c into @id,@goals;
+  while @@fetch_status = 0
+  BEGIN
+    IF @goals > @goalsBestPlayer
+      BEGIN
+       SET @goalsBestPlayer = @goals
+       SET @idBestPlayer = @id
+      END
+    fetch next from @c into @id,@goals;
+  END
+  PRINT @idBestPlayer
+END
+
