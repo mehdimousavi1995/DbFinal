@@ -132,7 +132,20 @@ ALTER TRIGGER check_stadium
    ROLLBACK;
    RAISERROR ('Two games can not take place in one stadium at a same time', 16,1);
   END
+SELECT * FROM Teams;
 
+ALTER TRIGGER limitTeams
+  on Teams AFTER INSERT
+  AS
+  DECLARE @count_A INT;
+  DECLARE @count_B INT;
+  SELECT @count_A = count(*) FROM Teams WHERE Teams.t_group = 'A'
+  SELECT @count_B = count(*) FROM Teams WHERE Teams.t_group = 'B'
+  IF @count_B > 4 OR @count_A > 4
+      BEGIN
+        RAISERROR ('this tournament can not have more than 4 teams in each group ... ',16,1);
+        ROLLBACK ;
+      END
 
 
 ALTER TRIGGER check_day_3_same_time
@@ -142,14 +155,27 @@ ALTER TRIGGER check_day_3_same_time
   DECLARE @tableCount INT;
   DECLARE @tableCount_day3 INT;
   SELECT @tableCount = count(*) FROM INSERTED
-      SELECT @time = t1.game_time FROM (SELECT * from Games except (SELECT top 8 * FROM Games)) AS t1;
-      SELECT @tableCount_day3 = count(*) FROM (SELECT * from Games except (SELECT top 8 * FROM Games)) AS t1 WHERE t1.game_time != @time;
+      SELECT @time = t1.game_time FROM (select top 4 * FROM (SELECT * from Games except (SELECT top 8 * FROM Games)) as t) AS t1;
+      SELECT @tableCount_day3 = count(*) FROM (select top 4 * FROM (SELECT * from Games except (SELECT top 8 * FROM Games)) as t) AS t1 WHERE t1.game_time != @time;
      IF @tableCount_day3 > 0
        BEGIN
          ROLLBACK;
          RAISERROR ('All games in third day must be in a same time', 16,1);
        END
 
+
+-- ALTER TRIGGER check_final_after_R
+--   ON Games AFTER INSERT
+--   AS
+--   DECLARE @time_final DATETIME;
+--   DECLARE @time_R DATETIME;
+--
+--   SELECT @time_final = Games.game_time FROM Games WHERE Games.game_time = 'final'
+--   SELECT @time_R = Games.game_time FROM Games WHERE Games.game_time = 'R'
+--   if DATEDIFF(dd,cast(as date) = ''@time_final, cast(as DATE) = @time_R) >= 0
+--       BEGIN
+--         PRINT 'fuck'
+--       END
 
 
 
