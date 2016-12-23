@@ -67,14 +67,16 @@ BEGIN
   SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC
 END
 
-
-
-
-
-
-
-
-
-
-
-
+CREATE TRIGGER LimitPlayers
+ON Players
+AFTER INSERT
+AS
+  DECLARE @tableCount INT;
+  DECLARE @inserted_game_id INT;
+  SELECT @inserted_game_id = INSERTED.team_id FROM INSERTED
+  SELECT @tableCount = COUNT(*)
+  FROM Players WHERE team_id = @inserted_game_id
+  IF @tableCount > 22
+  BEGIN
+   ROLLBACK
+  END
