@@ -37,9 +37,9 @@ AS
           END
 
 
-
 -- find best player based on number of goals
-CREATE PROCEDURE find_best_player AS
+CREATE FUNCTION find_best_player()
+  RETURNS INT AS
 BEGIN
   DECLARE @id INT;
   DECLARE @goals INT;
@@ -60,7 +60,7 @@ BEGIN
       END
     fetch next from @c into @id,@goals;
   END
-  PRINT @idBestPlayer
+  RETURN @idBestPlayer
 END
 
 -- shows group A teams (name , score , diff_goals)
