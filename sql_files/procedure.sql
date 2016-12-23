@@ -1,39 +1,45 @@
 
 -- Updates scores and diff_goals in group games
-CREATE PROCEDURE updateScores AS
-BEGIN
+
+SELECT * FROM Game_teams;
+
+UPDATE Game_teams SET team1_goals = 3 , team2_goals = 2 WHERE game_team_id = 10001
+
+SELECT * FROM Teams;
+
+CREATE TRIGGER update_scores
+ON Game_teams
+AFTER INSERT
+AS
   DECLARE @t_1 INT;
   DECLARE @t_2 INT;
   DECLARE @t1_goal INT;
   DECLARE @t2_goal INT;
-  DECLARE @c CURSOR;
-  set @c= CURSOR for select Game_teams.team_id1,Game_teams.team_id2,Game_teams.team1_goals,Game_teams.team2_goals from Game_teams,Games WHERE Games.game_id = Game_teams.game_id and Games.game_type = 'group' ;
-  open @c
-  fetch next from @c into @t_1,@t_2,@t1_goal,@t2_goal;
-  while @@fetch_status=0
-  BEGIN
-    PRINT @t_1;
-    PRINT @t_2;
-    PRINT @t1_goal;
-    PRINT @t2_goal;
-    IF @t1_goal > @t2_goal
-      BEGIN
-        UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
-        UPDATE Teams SET diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
-      END
-    IF  @t1_goal < @t2_goal
-      BEGIN
-        UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
-        UPDATE Teams SET diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
-      END
-    IF @t1_goal = @t2_goal
-      BEGIN
-        UPDATE Teams SET score = score + 1 WHERE team_id = @t_1;
-        UPDATE Teams SET score = score + 1 WHERE team_id = @t_2;
-      END
-    fetch next from @c into @t_1,@t_2,@t1_goal,@t2_goal;
-  END
-END
+  DECLARE @game_id INT;
+
+  SELECT @t_1 = INSERTED.team_id1,
+      @t_2 = INSERTED.team_id2,
+      @t1_goal = INSERTED.team1_goals,
+      @t2_goal = INSERTED.team2_goals
+      FROM INSERTED
+
+        IF @t1_goal > @t2_goal
+          BEGIN
+            UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
+            UPDATE Teams SET diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
+          END
+        IF  @t1_goal < @t2_goal
+          BEGIN
+            UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
+            UPDATE Teams SET diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
+          END
+        IF @t1_goal = @t2_goal
+          BEGIN
+            UPDATE Teams SET score = score + 1 WHERE team_id = @t_1;
+            UPDATE Teams SET score = score + 1 WHERE team_id = @t_2;
+          END
+
+
 
 -- find best player based on number of goals
 CREATE PROCEDURE find_best_player AS
@@ -72,7 +78,7 @@ BEGIN
   SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC
 END
 
--- if number of players exceed from 22 all operations rolling back    
+-- if number of players exceed from 22 all operations rolling back
 CREATE TRIGGER LimitPlayers
 ON Players
 AFTER INSERT
@@ -86,3 +92,29 @@ AS
   BEGIN
    ROLLBACK
   END
+
+ALTER PROCEDURE qualify_to_semi_final AS
+  BEGIN
+    DECLARE @a CURSOR;
+    DECLARE @b CURSOR;
+    DECLARE @t_1A INT;
+    DECLARE @t_2A INT;
+    DECLARE @t_1B INT;
+    DECLARE @t_2B  INT;
+    set @a= CURSOR for  SELECT Teams.team_id FROM Teams WHERE Teams.t_group = 'A' ORDER BY Teams.score DESC ,Teams.diff_goal DESC
+    set @b= CURSOR for  SELECT Teams.team_id FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC ,Teams.diff_goal DESC
+    OPEN @a
+    OPEN @b
+    fetch next from @a into @t_1A;
+    fetch next from @a into @t_2A;
+    fetch next from @b into @t_1B;
+    fetch next from @b into @t_2B;
+
+
+  END
+
+EXEC qualify_to_semi_final
+
+  SELECT * FROM Games;
+  SELECT * FROM Game_teams;
+
