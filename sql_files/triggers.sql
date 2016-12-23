@@ -67,7 +67,7 @@ CREATE TRIGGER check_stadium
   END
 SELECT * FROM Teams;
 
-ALTER TRIGGER limitTeams
+CREATE TRIGGER limitTeams
   on Teams AFTER INSERT
   AS
   DECLARE @count_A INT;
@@ -81,7 +81,7 @@ ALTER TRIGGER limitTeams
       END
 
 
-ALTER TRIGGER check_day_3_same_time
+CREATE TRIGGER check_day_3_same_time
   ON Games AFTER INSERT
   AS
   DECLARE @time DATETIME;

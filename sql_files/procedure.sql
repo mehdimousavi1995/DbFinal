@@ -1,4 +1,3 @@
-
 -- find best player based on number of goals
 CREATE FUNCTION find_best_player()
   RETURNS INT AS

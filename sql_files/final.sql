@@ -1,18 +1,3 @@
-
-CREATE DATABASE db_final;
-
-USE db_final;
-DROP TABLE Stadium;
-DROP TABLE Games;
-DROP TABLE Teams;
-DROP TABLE Referees;
-DROP TABLE Game_Referees;
-DROP TABLE Game_teams;
-DROP TABLE Players;
-DROP TABLE Couches_supervisor;
-
-
-
 CREATE TABLE Stadium(
   staduim_id INT IDENTITY(1,1),
   staduim_name VARCHAR(100),
