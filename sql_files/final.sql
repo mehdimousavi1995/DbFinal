@@ -2,9 +2,19 @@
 CREATE DATABASE db_final;
 
 USE db_final;
+DROP TABLE Stadium;
+DROP TABLE Games;
+DROP TABLE Teams;
+DROP TABLE Referees;
+DROP TABLE Game_Referees;
+DROP TABLE Game_teams;
+DROP TABLE Players;
+DROP TABLE Couches_supervisor;
+
+
 
 CREATE TABLE Stadium(
-  staduim_id INT NOT NULL,
+  staduim_id INT IDENTITY(1,1),
   staduim_name VARCHAR(100),
   location VARCHAR(100),
   capacity INT,
@@ -12,7 +22,7 @@ CREATE TABLE Stadium(
 );
 
 CREATE TABLE Games (
-  game_id INT NOT NULL,
+  game_id INT IDENTITY(1010,1),
   staduim_id INT,
   game_time DATETIME,
   game_type VARCHAR(100),
@@ -22,7 +32,7 @@ CREATE TABLE Games (
 )
 
 CREATE TABLE Referees(
-  referee_id INT NOT NULL,
+  referee_id INT IDENTITY(900,1),
   name VARCHAR(100),
   age INT,
   type VARCHAR(40),
@@ -31,7 +41,7 @@ CREATE TABLE Referees(
 )
 
 CREATE table Game_Referees(
-  game_referee_id INT,
+  game_referee_id INT IDENTITY(500,1),
   game_id INT,
   referee_id INT,
   PRIMARY KEY (game_referee_id),
@@ -40,7 +50,7 @@ CREATE table Game_Referees(
 )
 
 CREATE TABLE Teams(
-  team_id INT,
+  team_id INT IDENTITY(100,1),
   name VARCHAR(40),
   t_group VARCHAR(40),
   score INT,
@@ -49,7 +59,7 @@ CREATE TABLE Teams(
 )
 
 CREATE TABLE Game_teams(
-  game_team_id INT,
+  game_team_id INT IDENTITY(10001,1),
   game_id INT,
   team_id1 INT,
   team_id2 INT,
@@ -62,7 +72,7 @@ CREATE TABLE Game_teams(
 )
 
 CREATE TABLE Players(
-  player_id INT NOT NULL,
+  player_id INT IDENTITY(8500,1),
   team_id INT,
   name VARCHAR(100),
   age INT,
@@ -74,7 +84,7 @@ CREATE TABLE Players(
 )
 
 CREATE TABLE Couches_supervisor(
-  couches_id INT,
+  couches_id INT IDENTITY(1100,1),
   team_id INT,
   name VARCHAR(40),
   age INT,
@@ -83,22 +93,3 @@ CREATE TABLE Couches_supervisor(
   PRIMARY KEY (couches_id),
   FOREIGN KEY (team_id) REFERENCES Teams(team_id)
 )
-
-SELECT * FROM Teams;
-SELECT * FROM Game_teams;
-SELECT *FROM Games;
-
-select Game_teams.team_id1,Game_teams.team_id2,Game_teams.team1_goals,Game_teams.team1_goals from Game_teams,Games WHERE Games.game_id = Game_teams.game_id and Games.game_type = 'group' ;
-
-SELECT * FROM teams;
-
-
-  UPDATE Teams SET Teams.score = 0 , Teams.diff_goal = 0
-EXEC updateScores;
-SELECT  * FROM Teams;
-SELECT  * FROM Game_teams;
-
-
-
-
-
