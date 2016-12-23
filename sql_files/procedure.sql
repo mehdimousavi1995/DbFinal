@@ -38,6 +38,8 @@ AS
 
 
 -- find best player based on number of goals
+
+
 CREATE FUNCTION find_best_player()
   RETURNS INT AS
 BEGIN
@@ -132,3 +134,85 @@ ALTER TRIGGER check_stadium
   END
 
 
+
+ALTER TRIGGER check_day_3_same_time
+  ON Games AFTER INSERT
+  AS
+  DECLARE @time DATETIME;
+  DECLARE @tableCount INT;
+  DECLARE @tableCount_day3 INT;
+  SELECT @tableCount = count(*) FROM INSERTED
+      SELECT @time = t1.game_time FROM (SELECT * from Games except (SELECT top 8 * FROM Games)) AS t1;
+      SELECT @tableCount_day3 = count(*) FROM (SELECT * from Games except (SELECT top 8 * FROM Games)) AS t1 WHERE t1.game_time != @time;
+     IF @tableCount_day3 > 0
+       BEGIN
+         ROLLBACK;
+         RAISERROR ('All games in third day must be in a same time', 16,1);
+       END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+-- CREATE TRIGGER check_day_3_same_time
+--   ON Games AFTER INSERT
+--   AS
+--   DECLARE @game_time DATETIME;
+--   DECLARE @day3 DATETIME;
+--   DECLARE @game_id INT;
+--   DECLARE @tableCount INT;
+--   DECLARE @c CURSOR ;
+--
+--   SELECT @tableCount = count(*) FROM INSERTED
+--   IF @tableCount > 8
+--       BEGIN
+--         set @c= CURSOR for  SELECT Games.game_id , Games.game_time FROM Teams WHERE Games.game_type = 'group'
+--         DECLARE @count INT;
+--         SET @count = 8;
+--         OPEN @c
+--           while  @count != 0
+--           BEGIN
+--             fetch next from @c into @game_id, @game_time;
+--             SET @count = @count - 1;
+--           END
+--       END
+--   fetch next from @c into @game_id, @game_time;
+--   SET @day3 = @game_time
+--   WHILE @@fetch_status = 0
+--     BEGIN
+--       IF @day3 != @game_time
+--         BEGIN
+--            ROLLBACK;
+--            RAISERROR ('All games in third day must be in a same time', 16,1);
+--         END
+--       fetch next from @c into @game_id, @game_time;
+--     END
