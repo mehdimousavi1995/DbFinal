@@ -1,3 +1,5 @@
+
+-- Updates scores and diff_goals in group games
 CREATE PROCEDURE updateScores AS
 BEGIN
   DECLARE @t_1 INT;
@@ -33,6 +35,7 @@ BEGIN
   END
 END
 
+-- find best player based on number of goals
 CREATE PROCEDURE find_best_player AS
 BEGIN
   DECLARE @id INT;
@@ -57,16 +60,19 @@ BEGIN
   PRINT @idBestPlayer
 END
 
+-- shows group A teams (name , score , diff_goals)
 CREATE PROCEDURE table_group_A AS
 BEGIN
   SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'A' ORDER BY Teams.score DESC
 END
 
+-- shows group B teams (name , score , diff_goals)
 CREATE PROCEDURE table_group_B AS
 BEGIN
   SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC
 END
 
+-- if number of players exceed from 22 all operations rolling back    
 CREATE TRIGGER LimitPlayers
 ON Players
 AFTER INSERT
