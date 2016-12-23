@@ -1,12 +1,4 @@
 
--- Updates scores and diff_goals in group games
-
-SELECT * FROM Game_teams;
-
-UPDATE Game_teams SET team1_goals = 3 , team2_goals = 2 WHERE game_team_id = 10001
-
-SELECT * FROM Teams;
-
 CREATE TRIGGER update_scores
 ON Game_teams
 AFTER INSERT
@@ -16,7 +8,6 @@ AS
   DECLARE @t1_goal INT;
   DECLARE @t2_goal INT;
   DECLARE @game_id INT;
-
   SELECT @t_1 = INSERTED.team_id1,
       @t_2 = INSERTED.team_id2,
       @t1_goal = INSERTED.team1_goals,
@@ -67,15 +58,15 @@ BEGIN
 END
 
 -- shows group A teams (name , score , diff_goals)
-CREATE PROCEDURE table_group_A AS
+ALTER PROCEDURE table_group_A AS
 BEGIN
-  SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'A' ORDER BY Teams.score DESC
+  SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'A' ORDER BY Teams.score DESC , Teams.diff_goal DESC
 END
 
 -- shows group B teams (name , score , diff_goals)
-CREATE PROCEDURE table_group_B AS
+ALTER PROCEDURE table_group_B AS
 BEGIN
-  SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC
+  SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC , Teams.diff_goal DESC
 END
 
 -- if number of players exceed from 22 all operations rolling back
@@ -93,7 +84,8 @@ AS
    ROLLBACK
   END
 
-ALTER PROCEDURE qualify_to_semi_final AS
+
+CREATE PROCEDURE qualify_to_semi_final AS
   BEGIN
     DECLARE @a CURSOR;
     DECLARE @b CURSOR;
@@ -109,12 +101,8 @@ ALTER PROCEDURE qualify_to_semi_final AS
     fetch next from @a into @t_2A;
     fetch next from @b into @t_1B;
     fetch next from @b into @t_2B;
-
-
+    INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1022,@t_1A,@t_2B,0,0);
+    INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1023,@t_2A,@t_1B,0,0);
   END
 
-EXEC qualify_to_semi_final
-
-  SELECT * FROM Games;
-  SELECT * FROM Game_teams;
 
