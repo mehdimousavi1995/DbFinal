@@ -1,5 +1,6 @@
 
-CREATE TRIGGER update_scores
+
+ALTER TRIGGER update_scores
 ON Game_teams
 AFTER INSERT
 AS
@@ -8,23 +9,28 @@ AS
   DECLARE @t1_goal INT;
   DECLARE @t2_goal INT;
   DECLARE @game_id INT;
-  SELECT @t_1 = INSERTED.team_id1,
-      @t_2 = INSERTED.team_id2,
-      @t1_goal = INSERTED.team1_goals,
-      @t2_goal = INSERTED.team2_goals
-      FROM INSERTED
+  DECLARE @game_type VARCHAR(50);
 
-        IF @t1_goal > @t2_goal
+  SELECT  @t_1 = INSERTED.team_id1,
+          @t_2 = INSERTED.team_id2,
+          @t1_goal = INSERTED.team1_goals,
+          @t2_goal = INSERTED.team2_goals,
+          @game_id = INSERTED.game_id
+          FROM INSERTED
+
+        SELECT @game_type = Games.game_type FROM Games WHERE Games.game_id = @game_id
+
+        IF @t1_goal > @t2_goal AND @game_type = 'group'
           BEGIN
             UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
             UPDATE Teams SET diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
           END
-        IF  @t1_goal < @t2_goal
+        IF  @t1_goal < @t2_goal AND @game_type = 'group'
           BEGIN
             UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
             UPDATE Teams SET diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
           END
-        IF @t1_goal = @t2_goal
+        IF @t1_goal = @t2_goal AND @game_type = 'group'
           BEGIN
             UPDATE Teams SET score = score + 1 WHERE team_id = @t_1;
             UPDATE Teams SET score = score + 1 WHERE team_id = @t_2;
@@ -104,5 +110,3 @@ CREATE PROCEDURE qualify_to_semi_final AS
     INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1022,@t_1A,@t_2B,0,0);
     INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1023,@t_2A,@t_1B,0,0);
   END
-
-
