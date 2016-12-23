@@ -57,3 +57,24 @@ BEGIN
   PRINT @idBestPlayer
 END
 
+CREATE PROCEDURE table_group_A AS
+BEGIN
+  SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'A' ORDER BY Teams.score DESC
+END
+
+CREATE PROCEDURE table_group_B AS
+BEGIN
+  SELECT name,score,diff_goal FROM Teams WHERE Teams.t_group = 'B' ORDER BY Teams.score DESC
+END
+
+
+
+
+
+
+
+
+
+
+
+
