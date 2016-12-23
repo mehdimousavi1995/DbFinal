@@ -110,3 +110,25 @@ CREATE PROCEDURE qualify_to_semi_final AS
     INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1022,@t_1A,@t_2B,0,0);
     INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1023,@t_2A,@t_1B,0,0);
   END
+
+  SELECT * FROM Games;
+
+ALTER TRIGGER check_stadium
+  ON Games AFTER INSERT
+  AS
+  DECLARE @game_time DATETIME;
+  DECLARE @s_id INT;
+  DECLARE @tableCount INT;
+  SELECT @game_time = INSERTED.game_time,
+         @s_id = INSERTED.staduim_id
+         FROM INSERTED
+
+  SELECT @tableCount = COUNT(*)
+  FROM Games WHERE Games.game_time = @game_time AND Games.staduim_id = staduim_id
+  IF @tableCount > 0
+  BEGIN
+   ROLLBACK;
+   RAISERROR ('Two games can not take place in one stadium at a same time', 16,1);
+  END
+
+
