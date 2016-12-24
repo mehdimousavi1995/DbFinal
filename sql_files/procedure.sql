@@ -57,7 +57,3 @@ CREATE PROCEDURE qualify_to_semi_final AS
     INSERT INTO Game_teams (game_id, team_id1, team_id2, team1_goals, team2_goals) VALUES (1023,@t_2A,@t_1B,0,0);
   END
 
-
-EXEC table_group_A;
-EXEC table_group_B;
-

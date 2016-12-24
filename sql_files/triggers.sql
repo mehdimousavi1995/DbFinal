@@ -3,14 +3,12 @@ ALTER TRIGGER update_scores
 ON Game_teams
 AFTER INSERT
 AS
-
   DECLARE @t_1 INT;
   DECLARE @t_2 INT;
   DECLARE @t1_goal INT;
   DECLARE @t2_goal INT;
   DECLARE @game_id INT;
   DECLARE @game_type VARCHAR(50);
-
   SELECT  @t_1 = INSERTED.team_id1,
           @t_2 = INSERTED.team_id2,
           @t1_goal = INSERTED.team1_goals,
@@ -98,3 +96,17 @@ CREATE TRIGGER check_day_3_same_time
          ROLLBACK;
          RAISERROR ('All games in third day must be in a same time', 16,1);
        END
+
+CREATE TRIGGER check_final_date_before_R
+  ON Games AFTER INSERT
+  AS
+  DECLARE @time_final DATETIME;
+  DECLARE @time_R DATETIME;
+
+  SELECT @time_final = Games.game_time from Games WHERE Games.game_type = 'final'
+  SELECT @time_R = Games.game_time from Games WHERE Games.game_type = 'R'
+  IF (select datediff (DAY, '20100131', '20100201')) > 0
+  BEGIN
+    ROLLBACK;
+    RAISERROR ('All games in third day must be in a same time', 16,1);
+  END
