@@ -1,7 +1,9 @@
-CREATE TRIGGER update_scores
+
+ALTER TRIGGER update_scores
 ON Game_teams
 AFTER INSERT
 AS
+
   DECLARE @t_1 INT;
   DECLARE @t_2 INT;
   DECLARE @t1_goal INT;
@@ -28,7 +30,7 @@ AS
             UPDATE Teams SET score = score + 3 ,diff_goal = diff_goal + (@t2_goal - @t1_goal) WHERE team_id = @t_2;
             UPDATE Teams SET diff_goal = diff_goal + (@t1_goal - @t2_goal) WHERE team_id = @t_1;
           END
-        IF @t1_goal = @t2_goal AND @game_type = 'group'
+        IF @t1_goal = @t2_goal  AND @game_type = 'group'
           BEGIN
             UPDATE Teams SET score = score + 1 WHERE team_id = @t_1;
             UPDATE Teams SET score = score + 1 WHERE team_id = @t_2;
@@ -47,10 +49,9 @@ AS
   BEGIN
    ROLLBACK
   END
-DROP TRIGGER check_stadium
-SELECT * FROM Games;
 
-ALTER TRIGGER check_stadium
+
+CREATE TRIGGER check_stadium
   ON Games AFTER INSERT
   AS
   DECLARE @game_time DATETIME;

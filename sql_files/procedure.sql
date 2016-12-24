@@ -58,5 +58,6 @@ CREATE PROCEDURE qualify_to_semi_final AS
   END
 
 
-
+EXEC table_group_A;
+EXEC table_group_B;
 
