@@ -47,25 +47,27 @@ AS
   BEGIN
    ROLLBACK
   END
+DROP TRIGGER check_stadium
+SELECT * FROM Games;
 
-CREATE TRIGGER check_stadium
+ALTER TRIGGER check_stadium
   ON Games AFTER INSERT
   AS
   DECLARE @game_time DATETIME;
   DECLARE @s_id INT;
   DECLARE @tableCount INT;
+
   SELECT @game_time = INSERTED.game_time,
          @s_id = INSERTED.staduim_id
          FROM INSERTED
 
-  SELECT @tableCount = COUNT(*)
-  FROM Games WHERE Games.game_time = @game_time AND Games.staduim_id = staduim_id
-  IF @tableCount > 0
+  SELECT @tableCount = COUNT(*) FROM Games WHERE Games.game_time = @game_time AND Games.staduim_id = @s_id
+  IF @tableCount > 1
   BEGIN
    ROLLBACK;
    RAISERROR ('Two games can not take place in one stadium at a same time', 16,1);
   END
-SELECT * FROM Teams;
+
 
 CREATE TRIGGER limitTeams
   on Teams AFTER INSERT
